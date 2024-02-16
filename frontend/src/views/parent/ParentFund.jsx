@@ -20,7 +20,6 @@ import { childIdAtom, childNickNameAtom } from '@store/childIdsAtom.js';
 import { format } from 'date-fns';
 
 import styles from './ParentFund.module.css';
-import { useFetcher } from 'react-router-dom';
 
 export default function ParentFund() {
     const childId = useRecoilValue(childIdAtom);
@@ -212,7 +211,7 @@ export default function ParentFund() {
     };
 
     const handleFundNewsChange = (event) => {
-        setFundContent(event.target.value.trim());
+        setFundContent(event.target.value);
     };
 
     const handleFundAnswerChange = (event) => {
@@ -223,7 +222,7 @@ export default function ParentFund() {
     const handleFundNewsCreate = (event) => {
         event.preventDefault();
 
-        if (fundContent != null && fundContent != '') {
+        if (fundContent != null && fundContent != '' && fundContent.trim() != '') {
             createFundNews(
                 { content: fundContent, childId: childId },
                 (success) => {
@@ -264,7 +263,7 @@ export default function ParentFund() {
                     {selectFund ? (
                         <div className={styles.childFundStatusFrame}>
                             <p>투자 종목 : {fund.content}</p>
-                            <div style={{ textAlign: 'right' }}>
+                            <div style={{ textAlign: 'center' }}>
                                 {!selectReservationFund ? (
                                     <button onClick={() => setFundUpdateModalOpen(true)}>투자종목 수정하기</button>
                                 ) : (
@@ -365,7 +364,7 @@ export default function ParentFund() {
                     {selectReservationFund ? (
                         <div className={styles.childReservationFundStatusFrame}>
                             <p>투자 종목 : {fundReservation.content}</p>
-                            <div style={{ textAlign: 'right' }}>
+                            <div style={{ textAlign: 'center' }}>
                                 {fundReservation.state == 0 ? (
                                     <span style={{ color: 'red' }}>삭제 예정&nbsp;&nbsp;</span>
                                 ) : null}

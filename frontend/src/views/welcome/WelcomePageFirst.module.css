@@ -1,6 +1,7 @@
 .WelcomePageFirstContainer {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
@@ -11,17 +12,20 @@ h1 {
 }
 
 .headLogo,
-.headContents > p {
+.headContents > div > p {
     color: var(--component-background);
 }
 
-.headContents > p {
+.headContents > div > p {
     font-size: 25px;
     font-weight: 400;
 }
 
 .headContents {
     margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 8vh;
 }
 
 b {
@@ -29,13 +33,14 @@ b {
 }
 
 .WelcomePageButtonContainer {
-    margin-top: 100px;
+    margin-top: 80px;
 }
 
 .kakaoButton {
     display: flex;
     border: none;
     background-color: var(--nav-background);
+    cursor: pointer;
 }
 
 .naverButton {
@@ -45,4 +50,5 @@ b {
     align-items: center;
     border: none;
     border-radius: 5px;
+    cursor: pointer;
 }

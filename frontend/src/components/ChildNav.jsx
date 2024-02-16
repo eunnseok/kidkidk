@@ -1,5 +1,5 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import kidImg from '@images/kidImg.jpg';
+import logo from '@images/logo.png';
 import bell from '@images/bell.png';
 import acornImg from '@images/acorn.png';
 import styles from './ChildNav.module.css';
@@ -15,12 +15,12 @@ import { getJob } from '@api/job.js';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { userInfoState } from '../store/userInfoAtom.js';
 import { profileInfoState, parentProfileState } from '../store/profileInfoAtom.js';
-
+import { EventSourcePolyfill, NativeEventSource } from 'event-source-polyfill';
+import { sseState, lastEventIdState, notificationsState } from '../store/alarmAtom';
 
 function ChildNav() {
     const userInfo = useRecoilValue(userInfoState);
     const profileInfo = useRecoilValue(profileInfoState);
-    // console.log('프로필정보', profileInfo);
 
     const userId = userInfo.userId;
     const childId = profileInfo.profileId;
@@ -37,11 +37,33 @@ function ChildNav() {
     const [parentProfile, setParentProfile] = useRecoilState(parentProfileState); // 부모 프로필
     const [childJob, setChildJob] = useState([]); // 아이 직업
 
-    const a = ['5.5%', '18%', '29.5%', '41.5%'];
+    const a = ['6vh', '16vh', '26vh', '41.5%'];
     // const [child, setChild] = useState([{
     //     coin : 0,
     //     fundMoney : 0
     // }]);
+
+    const EventSource = EventSourcePolyfill || NativeEventSource;
+    const [sse, setSse] = useRecoilState(sseState);
+    const [lastEventId, setLastEventId] = useRecoilState(lastEventIdState);
+    const [notifications, setNotifications] = useRecoilState(notificationsState);
+
+    const kafkaSub = () => {
+        setSse(
+            (new EventSource(`https://notification.silvstone.xyz/subscribe/${profileInfo.profileId}`, {
+                // headers: {
+                //     'Last-Event-ID': lastEventId,
+                // },
+                heartbeatTimeout: 5 * 60 * 1000,
+            }).onmessage = (event) => {
+                if (event) {
+                    if (event.data !== 'connected!') {
+                        setNotifications((prev) => [...prev, JSON.parse(event.data)]);
+                    }
+                }
+            })
+        );
+    };
 
     useEffect(() => {
         getChild(
@@ -167,6 +189,8 @@ function ChildNav() {
 
     // 입금 및 출금 모달 열기
     const openChargeModal = () => {
+        setChargeCoinIn('');
+        setChargeCoinOut('');
         setCurrentIndex(0);
         setChargeModalIsOpen(true);
     };
@@ -258,15 +282,21 @@ function ChildNav() {
         }
     };
 
+    const handleLogoClick = () => {
+        navigate('/child/main');
+    };
+
     return (
         <div className={styles.container}>
             <div className={styles.nav}>
-                <div className={styles.logo}>KIDKIDK</div>
+                <div className={styles.logo}>
+                    <img src={logo} className={styles.logoImg} onClick={handleLogoClick} />
+                </div>
+
                 <div className={styles.menu}>
                     <Component num={0} title={'메인'} />
                     <Component num={1} title={'투자'} />
                     <Component num={2} title={'적금'} />
-                    <Component num={3} title={'공부방'} />
                 </div>
                 <div className={styles.light} style={{ top: a[top] }}>
                     <div className={styles.rectangleRow}></div>
@@ -284,7 +314,7 @@ function ChildNav() {
             </div>
             <div className={styles.profile}>
                 <div className={styles.imgContainer}>
-                    <img src={kidImg} />
+                    <img src={profileInfo.profileImage} />
                 </div>
                 <div>{childProfile.nickname}</div>
                 {childJob !== undefined && <div>직업 : {childJob.name}</div>}
@@ -428,7 +458,12 @@ function ChildNav() {
                 </div>
             </Modal>
 
-            <div onClick={() => setModalIsOpen(true)}>
+            <div
+                onClick={() => {
+                    setModalIsOpen(true);
+                    kafkaSub();
+                }}
+            >
                 <img src={bell} className={styles.alarm} />
             </div>
             <Modal

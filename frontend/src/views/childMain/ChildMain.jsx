@@ -41,7 +41,6 @@ function ChildMain() {
                 <div className={styles.toggle}>
                     <Toggle num={0} title={'관리'} />
                     <Toggle num={1} title={'내역'} />
-                    <div className={styles.circle} style={{ left: `${left}px` }}></div>
                 </div>
                 <div className={styles.content}>
                     {selectedToggle === 0 && <ChildMainManagement />}

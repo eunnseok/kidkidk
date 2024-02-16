@@ -4,6 +4,7 @@ import alarmCheckRead from '@images/alarmCheckRead.png'
 import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { notificationsState} from '../store/alarmAtom';
+import { uniqBy } from 'lodash';
 
 function ChildAlarm() {
     const [notifications, setNotifications] = useRecoilState(notificationsState);
@@ -54,11 +55,11 @@ function ChildAlarm() {
             <div className={styles.title}>알림 현황</div>
             <div className={styles.content}>
                 <div className={styles.cardHead}>
-                    <div>미확인 알림 : {notifications.filter(noti => !noti.read).length}개</div>
+                    <div>미확인 알림 : {uniqBy(notifications, 'key').filter(noti => !noti.read).length}개</div>
                     <div className={styles.alarmDel} onClick={deleteReadNotifications}>모든 읽은 알림 삭제</div>
                 </div>
                 <div className={styles.cards}>
-                    <Contents alarmData={notifications} />
+                    <Contents alarmData={uniqBy(notifications, 'key')} />
                 </div>
             </div>
         </div>

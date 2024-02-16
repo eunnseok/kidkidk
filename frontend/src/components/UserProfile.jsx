@@ -7,6 +7,7 @@ import { IoMdSettings } from 'react-icons/io';
 import { CgProfile } from 'react-icons/cg';
 import { RiLockPasswordFill } from 'react-icons/ri';
 import ProfileModal from '../../src/components/ProfileModal.jsx';
+import Modal from 'react-modal';
 
 import styles from './UserProfile.module.css';
 import kidImg from '@images/kidImg.jpg';
@@ -14,14 +15,21 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { profileInfoState } from '../store/profileInfoAtom';
 import { getChild } from '../apis/api/profile.js';
 
-import { lastEventIdState, notificationsState, sseState } from '../store/alarmAtom';
-import { EventSourcePolyfill, NativeEventSource } from 'event-source-polyfill';
-
 export default function UserProfile({ profileId, nickname, profile_image, userType }) {
     const navigate = useNavigate();
+    const [nick, setNick] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [modalLoginOpen, setModalLoginOpen] = useState(false);
+    const [modalUpdateOpen, setModalUpdateOpen] = useState(false);
+
+    const openModalLogin = () => setModalLoginOpen(true);
+    const openModalUpdate = () => setModalUpdateOpen(true);
+
     //onChange
     //업데이트 API에 쓰이는 onChange
     const onChangeUpdateNickname = (e) => {
+        setNick(e.target.value);
         setUpdateUser({
             ...updateUser,
             nickname: e.target.value,
@@ -29,30 +37,29 @@ export default function UserProfile({ profileId, nickname, profile_image, userTy
         console.log('타켓 벨류 : ' + e.target.value);
         console.log('바뀐 닉네임 : ' + updateUser.nickname);
     };
+
+    // 프로필 수정 비밀번호
     const onChangeUpdatePin = (e) => {
-        setUpdateUser({
-            ...updateUser,
-            pin: e.target.value,
-        });
+        const enteredValue = e.target.value;
+        // 정규 표현식을 사용하여 4개의 숫자만 입력 가능하도록 함
+        if (/^\d{0,4}$/.test(enteredValue)) {
+            setPassword(enteredValue);
+            setUpdateUser({
+                ...updateUser,
+                pin: e.target.value,
+            });
+        }
         // console.log('타켓 벨류 : ' + e.target.value)
         // console.log('바뀐 핀 : ' + updateUser.pin)
     };
-    //업데이트 API에 쓰이는 onChange
-    //onChange
 
-    //실험
-    // console.log(profileId);
-    // console.log(nickname);
-    // console.log(profile_image);
-    //실험
-    const [modalLoginOpen, setModalLoginOpen] = useState(false);
-    const [modalUpdateOpen, setModalUpdateOpen] = useState(false);
-
-    const openModalLogin = () => setModalLoginOpen(true);
-    const closeModalLogin = () => setModalLoginOpen(false);
-
-    const openModalUpdate = () => setModalUpdateOpen(true);
-    const closeModalUpdate = () => setModalUpdateOpen(false);
+    // 프로필 수정 비밀번호 확인
+    const onChangeConfirmPassword = (e) => {
+        const enteredValue = e.target.value;
+        if (/^\d{0,4}$/.test(enteredValue)) {
+            setConfirmPassword(enteredValue);
+        }
+    };
 
     //삭제 실험
     //버튼누르면 프로필 삭제
@@ -97,10 +104,19 @@ export default function UserProfile({ profileId, nickname, profile_image, userTy
     // 수정 실험 2024/02/07
     const [updateButtonClicked, setUpdateButtonClicked] = useState(false);
 
-    const updateClick = (e) => {
-        // e.preventDefault();
-        setUpdateButtonClicked(true);
+    // 프로필 수정 버튼
+    const updateClick = () => {
+        if (nick === '') {
+            alert('닉네임을 입력해주세요.');
+        } else if (password === '') {
+            alert('비밀번호를 입력해주세요.');
+        } else if (confirmPassword === '') {
+            alert('비밀번호를 확인해주세요.');
+        } else {
+            setUpdateButtonClicked(true);
+        }
     };
+
     const [updateData, setUpdateData] = useState([{}]);
 
     const [updateUser, setUpdateUser] = useState({
@@ -148,35 +164,16 @@ export default function UserProfile({ profileId, nickname, profile_image, userTy
     });
 
     const onChangeLoginPin = (e) => {
-        setLoginUser({
-            ...loginUser,
-            pin: e.target.value,
-        });
+        const enteredValue = e.target.value;
+        if (/^\d{0,4}$/.test(enteredValue)) {
+            setPassword(enteredValue);
+            setLoginUser({
+                ...loginUser,
+                pin: e.target.value,
+            });
+        }
         // console.log('타켓 벨류 : ' + e.target.value);
         // console.log('바뀐 핀 : ' + loginUser.pin);
-    };
-
-    const EventSource = EventSourcePolyfill || NativeEventSource;
-    const [sse, setSse] = useRecoilState(sseState);
-    const [lastEventId, setLastEventId] = useRecoilState(lastEventIdState);
-    const [notifications, setNotifications] = useRecoilState(notificationsState);
-
-    const kafkaSub = () => {
-        setSse(
-            (new EventSource(`https://notification.silvstone.xyz/subscribe/${profileId}`, {
-                headers: {
-                    'Last-Event-ID': lastEventId,
-                },
-                heartbeatTimeout: 5 * 60 * 1000,
-            }).onmessage = (event) => {
-                if (event) {
-                    if (event.data !== 'connected!') {
-                        setNotifications((prev) => [...prev, JSON.parse(event.data)]);
-                    }
-                    setLastEventId(event.lastEventId);
-                }
-            })
-        );
     };
 
     const loginClick = (e) => {
@@ -184,9 +181,8 @@ export default function UserProfile({ profileId, nickname, profile_image, userTy
         profileLogin(
             loginUser,
             async (Data) => {
-                console.log('로그인 성공', Data.data);
+                // console.log('로그인 성공', Data.data);
                 await setProfileInfo(Data.data);
-                kafkaSub();
                 if (Data.data.type) {
                     navigate('/parent');
                 } else {
@@ -203,7 +199,9 @@ export default function UserProfile({ profileId, nickname, profile_image, userTy
                 }
             },
             (fail) => {
-                console.log('오류오류 : ', fail);
+                alert('비밀번호를 잘못입력하였습니다.');
+                setPassword('');
+                // console.log('오류오류 : ', fail);
             }
         );
     };
@@ -217,79 +215,128 @@ export default function UserProfile({ profileId, nickname, profile_image, userTy
                     </button>
                 </div>
                 <div className={styles.userProfileNameContainer}>
-                    <span>{nickname}</span>
-                    &nbsp;
-                    <span>
-                        <button onClick={openModalUpdate}>
-                            <IoMdSettings />
-                        </button>
-                    </span>
+                    <div>{nickname}</div>
+
+                    <div className={styles.userProfileNameContainerBtn} onClick={openModalUpdate}>
+                        <IoMdSettings />
+                    </div>
                 </div>
             </div>
-            {modalLoginOpen ? (
-                <ProfileModal
-                    modalIsOpen={!!openModalLogin}
-                    closeModal={closeModalLogin}
-                    title="로그인 모달"
-                    content="이것은 로그인 모달입니다."
-                >
-                    <div className={styles.profileLoginModal}>
-                        <p>프로필 로그인</p>
-                        <form onSubmit={loginClick} className={styles.profileLoginForm}>
-                            <div className={styles.profileInputContainer}>
-                                <input type="password" onChange={onChangeLoginPin} />
 
-                                <div className={styles.iconContainer}>
-                                    <RiLockPasswordFill />
-                                </div>
-                            </div>
+            <Modal
+                appElement={document.getElementById('root')}
+                isOpen={modalLoginOpen}
+                onRequestClose={() => setModalLoginOpen(false)}
+                style={{
+                    overlay: { backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: '999' },
+                    content: {
+                        backgroundColor: '#F8F3E7',
+                        borderRadius: '15px',
+                        width: '35vw',
+                        height: '35vh',
+                        margin: 'auto',
+                        padding: '30px',
+                        position: 'absolute',
+                        zIndex: '999',
+                    },
+                }}
+            >
+                <div className={styles.profileLoginModal}>
+                    <div className={styles.profileLoginModalTitle}>프로필 로그인</div>
+                    <form onSubmit={loginClick} className={styles.profileLoginForm}>
+                        <div className={styles.profileInputContainer}>
+                            <input
+                                type="password"
+                                value={password}
+                                placeholder="비밀번호를 입력해주세요"
+                                onChange={onChangeLoginPin}
+                            />
 
-                            <button>로그인</button>
-                        </form>
-                    </div>
-                </ProfileModal>
-            ) : null}
-            {modalUpdateOpen ? (
-                <ProfileModal
-                    modalIsOpen={!!openModalUpdate}
-                    closeModal={closeModalUpdate}
-                    title="수정 모달"
-                    content="이것은 수정 모달입니다."
-                >
-                    <div className={styles.profileUpdateModal}>
-                        <p>프로필 수정</p>
-                        <form className={styles.profileUpdateForm}>
-                            <div>
-                                <ul>
-                                    <li>
-                                        <div className={styles.profileUpdateFormInputContainer}>
-                                            <span style={{ width: '97.99px' }}>닉네임</span>
-                                            <input type="text" onChange={onChangeUpdateNickname} />
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className={styles.profileUpdateFormInputContainer}>
-                                            <span style={{ width: '97.99px' }}>비밀번호</span>
-                                            <input type="text" onChange={onChangeUpdatePin} />
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className={styles.profileUpdateFormInputContainer}>
-                                            <span>비밀번호 확인</span>
-                                            <input type="text" />
-                                        </div>
-                                    </li>
-                                </ul>
+                            <div className={styles.iconContainer}>
+                                <RiLockPasswordFill />
                             </div>
-                            <div className={styles.profileUpdateFormButtonContainer}>
-                                <button /*onClick={updateClick}은 실험*/ onClick={updateClick}>프로필 수정</button>
-                                &nbsp;&nbsp;
-                                <button /*onClick={handleClick}은 실험*/ onClick={handleClick}>프로필 삭제</button>
-                            </div>
-                        </form>
-                    </div>
-                </ProfileModal>
-            ) : null}
+                        </div>
+
+                        <button>로그인</button>
+                    </form>
+                </div>
+            </Modal>
+
+            <Modal
+                appElement={document.getElementById('root')}
+                isOpen={modalUpdateOpen}
+                onRequestClose={() => setModalUpdateOpen(false)}
+                style={{
+                    overlay: { backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: '999' },
+                    content: {
+                        backgroundColor: '#F8F3E7',
+                        borderRadius: '15px',
+                        width: '40vw',
+                        height: '50vh',
+                        margin: 'auto',
+                        padding: '30px',
+                        position: 'absolute',
+                        zIndex: '999',
+                    },
+                }}
+            >
+                <div className={styles.profileUpdateModal}>
+                    <div className={styles.profileLoginModalTitle}>프로필 수정</div>
+                    <form className={styles.profileUpdateForm}>
+                        <div>
+                            <ul className={styles.profileUpdateUl}>
+                                <li>
+                                    <div className={styles.profileUpdateFormInputContainer}>
+                                        <div className={styles.profileUpdateContainerTitle}>닉네임</div>
+                                        <input
+                                            type="text"
+                                            value={nick}
+                                            className={styles.profileUpdateContainerInput}
+                                            onChange={onChangeUpdateNickname}
+                                            placeholder="닉네임을 입력해주세요"
+                                        />
+                                    </div>
+                                </li>
+                                <li>
+                                    <div className={styles.profileUpdateFormInputContainer}>
+                                        <div className={styles.profileUpdateContainerTitle}>비밀번호</div>
+                                        <input
+                                            type="password"
+                                            value={password}
+                                            className={styles.profileUpdateContainerInput}
+                                            onChange={onChangeUpdatePin}
+                                            placeholder="숫자 4개 입력해주세요"
+                                        />
+                                    </div>
+                                </li>
+                                <li>
+                                    <div className={styles.profileUpdateFormInputContainer}>
+                                        <div className={styles.profileUpdateContainerTitle}>비밀번호 확인</div>
+                                        <input
+                                            type="password"
+                                            value={confirmPassword}
+                                            className={styles.profileUpdateContainerInput}
+                                            onChange={onChangeConfirmPassword}
+                                            placeholder="비밀번호 확인"
+                                        />
+                                    </div>
+                                </li>
+                            </ul>
+                            {password !== confirmPassword && confirmPassword && (
+                                <div className={styles.passwordCheck}>비밀번호가 일치하지 않습니다.</div>
+                            )}
+                        </div>
+                        <div className={styles.profileUpdateFormButtonContainer}>
+                            <button className={styles.profileUpdateBtn1} onClick={updateClick}>
+                                프로필 수정
+                            </button>
+                            <button className={styles.profileUpdateBtn2} onClick={handleClick}>
+                                프로필 삭제
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </Modal>
         </>
     );
 }

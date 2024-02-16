@@ -33,6 +33,7 @@ public class SavingDto {
     }
 
     public void updateSavingDto(int count, int rate) {
+        this.startDate = LocalDateTime.now();
         this.count = count;
         this.rate = rate;
     }

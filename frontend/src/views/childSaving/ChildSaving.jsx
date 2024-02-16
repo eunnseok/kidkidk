@@ -17,7 +17,6 @@ import { profileInfoState } from '../../store/profileInfoAtom.js';
 export default function ChildSaving() {
     const profileInfo = useRecoilValue(profileInfoState);
     const childId = profileInfo.profileId;
-    const [isSavingStart, setIsSavingStart] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [currentTutorialIndex, setCurrentTutorialIndex] = useState(0);
     const [modalContents, setModalContents] = useState([
@@ -34,6 +33,7 @@ export default function ChildSaving() {
     const [countPayment, setCountPayment] = useState(0);
     const [endSavingDate, setEndSavingDate] = useState('');
     const [payment, setPayment] = useState('');
+    const [postPayment, setPostPayment] = useState('');
 
     // 현재 날짜 객체 생성
     const currentDate = new Date();
@@ -56,7 +56,7 @@ export default function ChildSaving() {
     // 요일을 가져오기 위해 getDay() 사용
     const futureDayOfWeek = daysOfWeek[futureDate.getDay()];
 
-    useEffect(() => {
+    const handleCreateSavingAccount = () => {
         if (payment !== '') {
             // payment 값이 비어있지 않을 때만 요청을 보냄
             // postSaving 함수를 호출하여 요청을 보냄
@@ -70,13 +70,13 @@ export default function ChildSaving() {
             };
 
             const errorCallback = () => {
-                console.error('요청 실패');
+                console.error('요청 실패1');
                 // 실패 시 실행할 작업
             };
 
             postSaving(savingData, successCallback, errorCallback);
         }
-    }, [payment]);
+    };
 
     useEffect(() => {
         getChild(
@@ -100,7 +100,7 @@ export default function ChildSaving() {
                 setSaving(success.data.Saving);
                 let tmpSaving = success.data.Saving;
                 const savingStartDate = new Date(tmpSaving.startDate);
-                const calcDate = addDays(savingStartDate, 22);
+                const calcDate = addDays(savingStartDate, 29);
                 const endDate = format(calcDate, 'yyyy-MM-dd');
                 const calcCountPaymet = tmpSaving.payment * (4 - tmpSaving.count);
                 const today = format(new Date(), 'yyyy-MM-dd');
@@ -418,8 +418,9 @@ export default function ChildSaving() {
                                                 <div className={styles.modalContent5Body2_1}>
                                                     {payment === 0 || payment === ''
                                                         ? '0 도토리'
-                                                        : Math.floor(parseInt(payment) + parseInt(payment) * 0.05) +
-                                                          ' 도토리'}
+                                                        : Math.floor(
+                                                              parseInt(payment) * 4 + parseInt(payment) * 4 * 0.05
+                                                          ) + ' 도토리'}
                                                 </div>
                                                 <img src={acornImg} style={{ width: '1.5vw', height: '1.5vw' }} />
                                             </div>
@@ -432,7 +433,7 @@ export default function ChildSaving() {
                                         <div
                                             className={styles.modalTwoBtn3}
                                             onClick={() => {
-                                                changeModalContent(currentTutorialIndex + 1);
+                                                handleCreateSavingAccount();
                                                 setModalIsOpen(false);
                                                 // setIsSavingStart(true);
                                             }}

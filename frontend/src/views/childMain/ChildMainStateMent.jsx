@@ -1,4 +1,4 @@
-import styles from './ChildMainStatement.module.css';
+import styles from './ChildMainStateMent.module.css';
 import ChildMainStatementTable from './ChildMainStatementTable.jsx';
 import { useRecoilValue } from 'recoil';
 import { profileInfoState } from '../../store/profileInfoAtom.js';

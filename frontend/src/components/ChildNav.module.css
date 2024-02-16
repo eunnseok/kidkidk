@@ -57,7 +57,12 @@
     font-size: 30px;
     font-weight: 600;
     z-index: 1;
-    margin: 10%;
+    margin-top: 10%;
+    margin-bottom: 2%;
+    cursor: pointer;
+}
+.logoImg {
+    width: 12vw;
 }
 .menu {
     color: #ffffff;
@@ -68,7 +73,7 @@
     gap: 7vh;
     position: relative;
     z-index: 1;
-    margin-bottom: 30vh;
+    margin-bottom: 40vh;
 }
 .light {
     position: absolute;
@@ -114,7 +119,6 @@
     width: 100px;
     height: 100px;
     overflow: hidden;
-    border-radius: 50%;
 }
 .imgContainer img {
     width: 100%; /* 이미지가 컨테이너에 꽉 차게 설정 */

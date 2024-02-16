@@ -211,7 +211,7 @@ export default function ParentMain() {
                                 <ul>
                                     <li>
                                         <p>
-                                            투자 항목 :
+                                            <strong>투자 항목 :</strong>
                                             {fund ? (
                                                 <> {fund.content} </>
                                             ) : (
@@ -219,6 +219,7 @@ export default function ParentMain() {
                                             )}
                                         </p>
                                     </li>
+                                    &nbsp;&nbsp;&nbsp;
                                     <li>
                                         {fund ? (
                                             <button className={styles.investQuitButton} onClick={handleFundClose}>

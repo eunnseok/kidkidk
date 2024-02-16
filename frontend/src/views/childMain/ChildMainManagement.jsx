@@ -26,12 +26,8 @@ export default function ManagementContent() {
     const [savingMoney, setSavingMoney] = useState(0);
     const [child, setChild] = useState([]);
     const [ratioPercentage, setRatioPercentage] = useState([]);
-<<<<<<< HEAD
     const [fundStatus, setFundStatus] = useState([]);
-=======
     const [parentProfile, setParentProfile] = useRecoilState(parentProfileState); // 부모 프로필
-
->>>>>>> 96a55275d27125ffd7d6a52051993dd677214a7f
 
     useEffect(() => {
         getJob(
@@ -168,10 +164,17 @@ export default function ManagementContent() {
         );
     };
 
-
     const handleClickJobDone = () => {
-        sendAlarm(`${parentProfile.profileId}`, `${profileInfo.nickname}`, `${profileInfo.nickname} 어린이가 미션을 완료하였습니다.`, `${job.task}`, "job", childId, 0);
-    }
+        sendAlarm(
+            `${parentProfile.profileId}`,
+            `${profileInfo.nickname}`,
+            `${profileInfo.nickname} 어린이가 미션을 완료하였습니다.`,
+            `${job.task}`,
+            'job',
+            childId,
+            0
+        );
+    };
 
     return (
         <div className={styles.manageContainer}>
@@ -196,7 +199,6 @@ export default function ManagementContent() {
                 <div className={styles.card1_2}>
                     <div className={styles.title}>
                         <div>{profileInfo.nickname} 어린이가 가지고 있는 모든 도토리</div>
-                        <div className={styles.title_info}>i</div>
                     </div>
 
                     <div className={styles.iconContainer2}>
@@ -234,7 +236,10 @@ export default function ManagementContent() {
                             <div className={styles.barChartCnt}>
                                 {job.doneCount}/{job.taskAmount}
                             </div>
-                            <div className={styles.jobTaskBtn} onClick={handleClickJobDone}> 완료 </div>
+                            <div className={styles.jobTaskBtn} onClick={handleClickJobDone}>
+                                {' '}
+                                완료{' '}
+                            </div>
                         </div>
                     ) : (
                         '이번주 할 일이 없습니다.'

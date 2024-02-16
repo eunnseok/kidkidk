@@ -11,7 +11,7 @@
 }
 
 .childSavingStatus > :nth-child(2) {
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 400;
 }
 
@@ -27,10 +27,12 @@
     border: 3px solid var(--component-border);
     border-radius: 15px;
     margin-top: 10px;
+    color: var(--nav-background);
 }
 
 .childSavingStatusFrame > div > p:first-child {
     font-weight: bold;
+    font-size: 20px;
 }
 
 .childSavingStatusFrame_paymentTimes {
@@ -49,6 +51,7 @@
 
 .childSavingStatusFrame_paymentTimes > table th {
     font-weight: normal;
+    font-size: 17px;
     width: 70px;
 }
 

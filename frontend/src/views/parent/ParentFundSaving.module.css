@@ -19,6 +19,7 @@
     display: flex;
     cursor: pointer;
     padding-top: 4%;
+    margin-bottom: 7px;
 }
 .textselected {
     color: #ffb700;

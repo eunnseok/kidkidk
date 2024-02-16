@@ -118,11 +118,9 @@ export default function ParentSaving() {
                                                     key={index}
                                                     style={{
                                                         // backgroundColor: 'lightgreen'
-                                                        backgroundColor: data.amount > 0 ? '#90ee90' : '#d3d3d3',
+                                                        backgroundColor: data.amount > 0 ? '#35B356' : '#d3d3d3',
                                                     }}
-                                                >
-                                                    {data.id}
-                                                </td>
+                                                ></td>
                                             );
                                         })}
                                     </tr>

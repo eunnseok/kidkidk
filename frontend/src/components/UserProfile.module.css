@@ -8,6 +8,7 @@
     border-radius: 15px;
     margin-right: 5px;
     color: white;
+    cursor: pointer;
 }
 
 .userProfileImageContainer {
@@ -18,6 +19,7 @@
     height: 120px;
     overflow: hidden;
     padding: 15px;
+    cursor: pointer;
 }
 
 .userProfileImageContainer button {
@@ -26,44 +28,57 @@
     width: 120px;
     height: 120px;
     padding: 0; /* 내부 패딩 초기화 */
+    cursor: pointer;
 }
 
 .userProfileImageContainer img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    border: 1px solid;
+    /* border: 1px solid; */
     margin-top: 10px;
+    cursor: pointer;
+}
+.userProfileNameContainer {
+    display: flex;
+    gap: 0.5vw;
+    margin-top: 1vh;
 }
 
-.userProfileNameContainer button {
+.userProfileNameContainerBtn {
     border: none; /* 버튼 스타일 초기화 */
     background-color: transparent;
+    cursor: pointer;
 }
 
 /* 프로필 로그인 모달 */
 .profileLoginModal {
+    display: flex;
+    flex-direction: column;
     text-align: center;
-    padding: 30px;
 }
-
-.profileLoginModal > p {
+.profileLoginModalTitle {
     font-size: 35px;
+    color: #4d4637;
+    margin-top: 3vh;
+    margin-bottom: 1vh;
+    font-weight: 900;
 }
 
 .profileLoginModal button {
-    background-color: black;
+    background-color: #a16951;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 15px;
     border-radius: 15px;
-    margin-top: 25px;
-    padding: 5px 20px 5px 20px;
+    margin-top: 35px;
     border: none;
     outline: none;
     cursor: pointer;
+    width: 15vw;
+    height: 5vh;
 }
 
 .profileLoginForm {
@@ -74,12 +89,17 @@
 
 .profileLoginForm > .profileInputContainer > input {
     margin-top: 30px;
-    background-color: var(--component-background);
+    background-color: #f8f3e7;
     text-align: center;
-    border: 3px solid var(--component-border);
+    border: 2px solid #4d4637;
     border-radius: 15px;
-    width: 200px;
-    height: 30px;
+    width: 15vw;
+    height: 5vh;
+}
+
+.profileLoginForm > .profileInputContainer > input::placeholder {
+    text-align: center;
+    color: #c1b8ad;
 }
 
 .profileLoginForm input::placeholder {
@@ -91,7 +111,7 @@
 
 .iconContainer {
     position: absolute;
-    top: 80%;
+    top: 76%;
     left: 10px; /* 필요에 따라 조절 */
     transform: translateY(-50%);
 }
@@ -99,10 +119,8 @@
 /* 프로필 수정 모달 */
 
 .profileUpdateModal {
-    padding: 30px;
-}
-
-.profileUpdateModal > p {
+    display: flex;
+    flex-direction: column;
     text-align: center;
 }
 
@@ -118,42 +136,68 @@
     list-style: none;
 }
 
-.profileUpdateForm ul li input {
-    margin-top: 20px;
-    background-color: var(--component-background);
+.profileUpdateContainerInput {
+    background-color: #f8f3e7;
     text-align: center;
-    border: 3px solid var(--component-border);
+    border: 1px solid #4d4637;
     border-radius: 15px;
     width: 200px;
     height: 30px;
 }
 
-.profileUpdateModal > p {
-    font-size: 35px;
-}
-
 .profileUpdateModal button {
-    background-color: black;
-    color: white;
-    font-size: 12px;
     border-radius: 15px;
-    margin-top: 30px;
-    padding: 5px 20px 5px 20px;
     border: none;
     outline: none;
 }
 
 .profileUpdateFormInputContainer {
     display: flex;
-    align-items: center; /* 수직 가운데 정렬 */
+    align-items: center;
 }
 
-.profileUpdateFormInputContainer span {
-    margin-right: 10px;
-    margin-top: 25px;
+.profileUpdateContainerTitle {
+    width: 8vw;
+    font-size: 18px;
+    font-weight: 900;
+    color: #4d4637;
+    display: flex;
+    justify-content: left;
 }
 
 .profileUpdateFormButtonContainer {
     display: flex;
     justify-content: center;
+    gap: 1vw;
+    margin-top: 5vh;
+}
+.profileUpdateUl {
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+}
+.profileUpdateFormInputContainer input::placeholder {
+    text-align: center;
+    color: #c1b8ad;
+}
+.passwordCheck {
+    width: 94%;
+    display: flex;
+    justify-content: end;
+    font-size: 12px;
+    color: #f57d73;
+}
+.profileUpdateBtn1,
+.profileUpdateBtn2 {
+    width: 8vw;
+    height: 5vh;
+    color: #ffffff;
+    font-size: 15px;
+    cursor: pointer;
+}
+.profileUpdateBtn1 {
+    background-color: #a16951;
+}
+.profileUpdateBtn2 {
+    background-color: #f57d73;
 }

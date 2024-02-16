@@ -65,6 +65,10 @@ export default function ParentFundProfitGraph() {
             title: {
                 display: true,
                 text: '투자 이익률 그래프',
+                font: {
+                    size: 18, // 원하는 폰트 크기로 조절
+                },
+                color: 'var(--nav-background)',
             },
         },
         responsive: true,

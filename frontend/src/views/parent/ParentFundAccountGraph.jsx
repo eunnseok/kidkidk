@@ -104,6 +104,10 @@ export default function ParentFundAccountGraph() {
             title: {
                 display: true,
                 text: '투자 손익금 그래프',
+                font: {
+                    size: 18, // 원하는 폰트 크기로 조절
+                },
+                color: 'color: var(--nav-background)',
             },
         },
     };
@@ -114,7 +118,7 @@ export default function ParentFundAccountGraph() {
         labels,
         datasets: [
             {
-                label: '투좌 손익금 누적액',
+                label: '투자 손익금 누적액',
                 data: thisWeekInvestments,
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',

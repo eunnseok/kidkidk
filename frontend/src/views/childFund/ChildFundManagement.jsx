@@ -366,6 +366,9 @@ export default function ChildFundManagement() {
             sumSeedMoney = sumSeedMoney == 0 ? 1 : sumSeedMoney;
             let pRate = (sumPnl / sumSeedMoney) * 100; // 이익률
 
+            avg = avg.toFixed(0);
+            pRate = pRate.toFixed(0);
+
             setAvgFundMoney(avg);
             setPnlRate(pRate);
         }
@@ -390,7 +393,7 @@ export default function ChildFundManagement() {
                                 ) : null}
                             </div>
                             <div className={styles.card1_text1}>
-                                {fund.name === null ? (
+                                {isFundItem ? (
                                     <> {fund.content} </>
                                 ) : (
                                     <span style={{ color: '#C1B8AD' }}>오늘은 투자 항목이 없어요 ㅠㅠ </span>

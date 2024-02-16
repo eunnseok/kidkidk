@@ -17,11 +17,11 @@
     width: 100px;
     height: 100px;
     overflow: hidden;
-    border-radius: 50%;
+    /* border-radius: 50%; */
 }
 
 .profileImageContainer img {
-    width: 150%;
+    width: 100%;
     height: auto;
     display: block;
 }

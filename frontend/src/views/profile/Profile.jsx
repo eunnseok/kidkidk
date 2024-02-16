@@ -4,16 +4,15 @@ import { CgProfile } from 'react-icons/cg';
 import { RiLockPasswordFill } from 'react-icons/ri';
 import { RiParentLine } from 'react-icons/ri';
 import { FaRegImage } from 'react-icons/fa6';
-
+import Modal from 'react-modal';
 import UserProfile from '../../components/UserProfile';
 import ProfileModal from '../../components/ProfileModal';
-
 import styles from './Profile.module.css';
-
-import parentImg from '@images/parentImg.jpg';
-import kidImg from '@images/kidImg.jpg';
 import profilePlus from '@images/profilePlus.png';
-
+import child1 from '@images/child1.png';
+import child2 from '@images/child2.png';
+import parent1 from '@images/parent1.png';
+import parent2 from '@images/parent2.png';
 import { useRecoilValue } from 'recoil';
 import { userInfoState } from '../../store/userInfoAtom';
 
@@ -24,8 +23,52 @@ export default function Profile() {
     const userInfo = useRecoilValue(userInfoState);
     console.log('userinfo : ', userInfo);
 
-    //onChange
+    const [nickname, setNickname] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [selectedImage, setSelectedImage] = useState(''); // 이미지 경로 저장
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
+    const [createData, setCreateData] = useState([{}]); //profileCreate API데이터 받아오기
+    const [createUser, setCreateUser] = useState({
+        nickname: '',
+        pin: 0,
+        profileImage: '',
+        type: true,
+        userId: userInfo.userId,
+    });
+    const [modalCreateOpen, setModalCreateOpen] = useState(false);
+    const [imageType, setImageType] = useState('parent'); // 부모/자식 선택
+    const [SelectAllData, setSelectAllData] = useState([{}]); //profileSelectAll API데이터 받아오기
+    const [user, setUser] = useState({
+        profileId: 0,
+        nickname: 'string',
+        profileImage: 'string',
+        type: true,
+        userId: 1,
+    });
+
+    // 프로필 이미지를 클릭했을 때
+    const handleImageClick = (imagePath) => {
+        setSelectedImage(`${imagePath}`); // 클릭한 이미지의 경로를 저장
+    };
+
+    // 모달 열기
+    const openModalCreate = () => setModalCreateOpen(true);
+
+    // 모달 열릴때 초기화
+    useEffect(() => {
+        if (modalCreateOpen) {
+            setNickname('');
+            setPassword('');
+            setConfirmPassword('');
+            setSelectedImage('');
+            setImageType('parent');
+        }
+    }, [modalCreateOpen]);
+
+    // 프로필 닉네임
     const onChangeCreateNickname = (e) => {
+        setNickname(e.target.value);
         setCreateUser({
             ...createUser,
             nickname: e.target.value,
@@ -33,22 +76,39 @@ export default function Profile() {
         // console.log('타켓 벨류 : ' + e.target.value);
         // console.log('바뀐 닉네임 : ' + createUser.nickname);
     };
+
+    // 프로필 비밀번호
     const onChangeCreatePin = (e) => {
-        setCreateUser({
-            ...createUser,
-            pin: e.target.value,
-        });
+        const enteredValue = e.target.value;
+        // 정규 표현식을 사용하여 4개의 숫자만 입력 가능하도록 함
+        if (/^\d{0,4}$/.test(enteredValue)) {
+            setPassword(enteredValue);
+            setCreateUser({
+                ...createUser,
+                pin: enteredValue,
+            });
+        }
         // console.log('타켓 벨류 : ' + e.target.value);
         // console.log('바뀐 핀 : ' + createUser.pin);
     };
 
+    // 프로필 비밀번호 확인
+    const onChangeConfirmPassword = (e) => {
+        const enteredValue = e.target.value;
+        if (/^\d{0,4}$/.test(enteredValue)) {
+            setConfirmPassword(enteredValue);
+        }
+    };
+
+    // 부모/자식 선택
     const onChangeCreateType = (e) => {
-        if (e.target.value == '부모') {
+        setImageType(e.target.value);
+        if (e.target.value == 'parent') {
             setCreateUser({
                 ...createUser,
                 type: true,
             });
-        } else if (e.target.value == '자식') {
+        } else if (e.target.value == 'child') {
             setCreateUser({
                 ...createUser,
                 type: false,
@@ -57,35 +117,30 @@ export default function Profile() {
         // console.log('타켓 벨류 : ' + e.target.value);
         // console.log('바뀐 타입 : ' + createUser.type);
     };
-    //onChange
 
-    //버튼누르면 프로필 생성
-    const [isButtonClicked, setIsButtonClicked] = useState(false);
-
+    // 프로필 등록 버튼 클릭 함수
     const handleClick = () => {
-        setIsButtonClicked(true);
+        if (nickname === '') {
+            alert('닉네임을 입력해주세요.');
+        } else if (password === '') {
+            alert('비밀번호를 입력해주세요.');
+        } else if (confirmPassword === '') {
+            alert('비밀번호를 확인해주세요.');
+        } else if (selectedImage === '') {
+            // 프로필 이미지를 선택하지 않았을때 알람 띄우기
+            alert('프로필 이미지를 선택해주세요.');
+        } else {
+            setIsButtonClicked(true);
+        }
     };
-
-    //profileCreate API데이터 받아오기
-    const [createData, setCreateData] = useState([{}]);
-
-    const [createUser, setCreateUser] = useState({
-        nickname: '',
-        pin: 0,
-        profileImage: '',
-        type: true,
-        userId: userInfo.userId,
-    });
 
     useEffect(() => {
         if (isButtonClicked) {
             // console.log('Profile Create Enter');
             // console.log('createUser 닉네임은 :' + createUser.nickname);
-            if (createUser.type) {
-                createUser.profileImage = '/src/assets/images/parentImg.jpg';
-            } else {
-                createUser.profileImage = '/src/assets/images/kidImg.jpg';
-            }
+
+            createUser.profileImage = selectedImage;
+
             profileCreate(
                 createUser,
                 (createData) => {
@@ -101,17 +156,6 @@ export default function Profile() {
             // console.log('Profile Create return');
         };
     }, [isButtonClicked]);
-
-    //profileSelectAll API데이터 받아오기
-    const [SelectAllData, setSelectAllData] = useState([{}]);
-
-    const [user, setUser] = useState({
-        profileId: 0,
-        nickname: 'string',
-        profileImage: 'string',
-        type: true,
-        userId: 1,
-    });
 
     useEffect(() => {
         // console.log('Profile SelectAll Enter');
@@ -195,11 +239,6 @@ export default function Profile() {
     //     // 추가적인 프로필 데이터...
     // ];
 
-    const [modalCreateOpen, setModalCreateOpen] = useState(false);
-
-    const openModalCreate = () => setModalCreateOpen(true);
-    const closeModalCreate = () => setModalCreateOpen(false);
-
     return (
         <>
             {SelectAllData.map}
@@ -217,58 +256,158 @@ export default function Profile() {
                         />
                     ))}
                     <div>
-                        <div className={styles.addProfileImageContainer}>
-                            <button onClick={openModalCreate}>
+                        <div className={styles.addProfileImageContainer} onClick={openModalCreate}>
+                            <button>
                                 <img src={profilePlus} alt="프로필 이미지" />
                             </button>
-                            <span>Add Profile</span>
+                            <span>프로필 추가</span>
                         </div>
                     </div>
                 </div>
 
-                <p className={styles.profileptag}>프로필을 선택해주세요</p>
-                {modalCreateOpen ? (
-                    <ProfileModal
-                        modalIsOpen={!!openModalCreate}
-                        closeModal={closeModalCreate}
-                        title="프로필 생성 모달"
-                        content="이것은 프로필 생성 모달입니다."
-                    >
-                        <div className={styles.profileCreateModal}>
-                            <p>프로필 등록</p>
-                            <form className={styles.profileCreateForm}>
-                                <div className={styles.profileInputContainer}>
-                                    <input type="text" onChange={onChangeCreateNickname} placeholder="닉네임" />
+                <div className={styles.profileptag}>프로필을 선택해주세요</div>
+                <Modal
+                    appElement={document.getElementById('root')}
+                    isOpen={modalCreateOpen}
+                    onRequestClose={() => setModalCreateOpen(false)}
+                    style={{
+                        overlay: { backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: '999' },
+                        content: {
+                            backgroundColor: '#F8F3E7',
+                            borderRadius: '15px',
+                            width: '40vw',
+                            height: '70vh',
+                            margin: 'auto',
+                            padding: '30px',
+                            position: 'absolute',
+                            zIndex: '999',
+                        },
+                    }}
+                >
+                    <div className={styles.profileCreateModal}>
+                        <div className={styles.profileCreateTitle}>프로필 등록</div>
+                        <form className={styles.profileCreateForm}>
+                            <div className={styles.profileInputContainer}>
+                                <div className={styles.profileInputContainerTitle}>닉네임</div>
+                                <input
+                                    type="text"
+                                    value={nickname}
+                                    onChange={onChangeCreateNickname}
+                                    placeholder="닉네임을 입력해주세요"
+                                />
 
-                                    <div className={styles.iconContainer}>
-                                        <CgProfile />
-                                    </div>
+                                <div className={styles.iconContainer}>
+                                    <CgProfile />
                                 </div>
+                            </div>
 
-                                <div className={styles.profileInputContainer}>
-                                    <input type="text" onChange={onChangeCreatePin} placeholder="비밀번호" />
-
-                                    <div className={styles.iconContainer}>
-                                        <RiLockPasswordFill />
-                                    </div>
+                            <div className={styles.profileInputContainer}>
+                                <div className={styles.profileInputContainerTitle}>비밀번호</div>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={onChangeCreatePin}
+                                    placeholder="숫자 4개 입력해주세요"
+                                />
+                                <div className={styles.iconContainer}>
+                                    <RiLockPasswordFill />
                                 </div>
+                            </div>
 
+                            <div className={styles.profileInputContainer}>
+                                <div className={styles.profileInputContainerTitle}>비밀번호 확인</div>
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={onChangeConfirmPassword}
+                                    placeholder="비밀번호 확인"
+                                />
+                                <div className={styles.iconContainer}>
+                                    <RiLockPasswordFill />
+                                </div>
+                            </div>
+
+                            {password !== confirmPassword && confirmPassword && (
+                                <div className={styles.passwordCheck}>비밀번호가 일치하지 않습니다.</div>
+                            )}
+
+                            <div className={styles.profileInputContainer}>
+                                <div className={styles.profileInputContainerTitle}>부모 / 아이</div>
                                 <div className={styles.profileInputRadioContainer}>
-                                    <label htmlFor="true">
-                                        부모&nbsp;
-                                        <input type="radio" name="answer" value="부모" onChange={onChangeCreateType} />
+                                    <label htmlFor="true" className={styles.profileInputRadioConent}>
+                                        <input
+                                            type="radio"
+                                            id="true"
+                                            name="answer"
+                                            value="parent"
+                                            onChange={onChangeCreateType}
+                                        />
+                                        부모
                                     </label>
-                                    &nbsp;&nbsp;
-                                    <label htmlFor="false">
-                                        자식&nbsp;
-                                        <input type="radio" name="answer" value="자식" onChange={onChangeCreateType} />
+
+                                    <label htmlFor="false" className={styles.profileInputRadioConent}>
+                                        <input
+                                            type="radio"
+                                            id="false"
+                                            name="answer"
+                                            value="child"
+                                            onChange={onChangeCreateType}
+                                        />
+                                        자식
                                     </label>
                                     <div className={styles.iconContainerFamily}>
                                         <RiParentLine />
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* <div className={styles.profileInputContainer}>
+                            <div className={styles.profileInputContainer}>
+                                <div className={styles.profileInputContainerTitle}>프로필 이미지</div>
+                                <div className={styles.profileInputImgContainer}>
+                                    {imageType === 'parent' && (
+                                        <div className={styles.profileInputImgContainer1}>
+                                            <img
+                                                src={parent1}
+                                                className={`${styles.profileInputContainerImg} ${
+                                                    selectedImage === parent1 ? styles.selectedImage : ''
+                                                }`}
+                                                alt="Parent 1"
+                                                onClick={() => handleImageClick(parent1)}
+                                            />
+                                            <img
+                                                src={parent2}
+                                                className={`${styles.profileInputContainerImg} ${
+                                                    selectedImage === parent2 ? styles.selectedImage : ''
+                                                }`}
+                                                alt="Parent 2"
+                                                onClick={() => handleImageClick(parent2)}
+                                            />
+                                        </div>
+                                    )}
+                                    {imageType === 'child' && (
+                                        <div className={styles.profileInputImgContainer1}>
+                                            <img
+                                                src={child1}
+                                                className={`${styles.profileInputContainerImg} ${
+                                                    selectedImage === child1 ? styles.selectedImage : ''
+                                                }`}
+                                                alt="Child 1"
+                                                onClick={() => handleImageClick(child1)}
+                                            />
+                                            <img
+                                                src={child2}
+                                                className={`${styles.profileInputContainerImg} ${
+                                                    selectedImage === child2 ? styles.selectedImage : ''
+                                                }`}
+                                                alt="Child 2"
+                                                onClick={() => handleImageClick(child2)}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* <div className={styles.profileInputContainer}>
                                     <label htmlFor={styles.fileButton}>
                                         <div className={styles.profileDiv}>프로필 이미지</div>
                                     </label>
@@ -278,11 +417,10 @@ export default function Profile() {
                                     </div>
                                 </div> */}
 
-                                <button onClick={handleClick}>프로필 등록</button>
-                            </form>
-                        </div>
-                    </ProfileModal>
-                ) : null}
+                            <button onClick={handleClick}>프로필 등록</button>
+                        </form>
+                    </div>
+                </Modal>
             </div>
         </>
     );

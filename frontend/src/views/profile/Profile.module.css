@@ -3,13 +3,14 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: var(--nav-background);
+    background-color: #c1b8ad;
     height: 100vh;
 }
 
 .profileBox {
     display: flex;
     flex-direction: row;
+    gap: 1vw;
 }
 
 .profileptag {
@@ -30,6 +31,7 @@
     border-radius: 15px;
     margin-right: 5px;
     color: white;
+    cursor: pointer;
 }
 
 .addProfileImageContainer span {
@@ -48,80 +50,109 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+    cursor: pointer;
 }
 
 /* 프로필 등록 모달 */
 .profileCreateModal {
-    text-align: center;
-    padding: 30px;
+    display: flex;
+    flex-direction: column;
 }
-
-.profileCreateModal > p {
-    font-size: 35px;
-    margin-bottom: 10px;
+.profileCreateTitle {
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 900;
+    color: #4d4637;
+    margin-top: 2vh;
+    margin-bottom: 4vh;
 }
-
-.profileCreateModal button {
-    background-color: black;
-    color: white;
-    font-size: 15px;
-    border-radius: 15px;
-
-    margin-top: 20px;
-    padding: 5px 20px 5px 20px;
-    border: none;
-    outline: none;
-    cursor: pointer;
-}
-
 .profileCreateForm {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 2vh;
 }
 
 .profileCreateForm > .profileInputContainer > input {
-    margin-top: 20px;
-    background-color: var(--component-background);
+    background-color: #f8f3e7;
     text-align: center;
-    border: 3px solid var(--component-border);
+    border: 1px solid #4d4637;
     border-radius: 15px;
-    width: 200px;
-    height: 30px;
+    width: 15vw;
+    height: 5vh;
+    font-size: 15px;
+    color: #4d4637;
 }
 
 .profileCreateForm input::placeholder {
     text-align: center;
+    color: #c1b8ad;
+}
+
+.profileCreateModal button {
+    background-color: #a16951;
+    color: white;
+    font-size: 15px;
+    border-radius: 15px;
+    border: none;
+    width: 15vw;
+    height: 5vh;
+    margin-top: 15px;
+    cursor: pointer;
 }
 .profileInputContainer {
     position: relative;
-}
-
-.profileInputRadioContainer {
-    position: relative;
-    margin-top: 20px;
-    background-color: var(--component-background);
     display: flex;
-    justify-content: center;
     align-items: center;
-    text-align: center;
-    border: 3px solid var(--component-border);
-    border-radius: 15px;
-    width: 200px;
-    height: 30px;
 }
 
 .iconContainer {
     position: absolute;
-    top: 75%;
-    left: 10px; /* 필요에 따라 조절 */
+    top: 60%;
+    left: 11vw;
     transform: translateY(-50%);
 }
+.profileInputContainerTitle {
+    width: 10vw;
+    font-size: 18px;
+    font-weight: 900;
+    color: #4d4637;
+}
 
+.profileInputRadioContainer {
+    position: relative;
+    background-color: #f8f3e7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1vw;
+    border: 1px solid #4d4637;
+    border-radius: 15px;
+    width: 15vw;
+    height: 5vh;
+}
+.passwordCheck {
+    width: 50%;
+    display: flex;
+    justify-content: end;
+    font-size: 12px;
+    color: #f57d73;
+}
+.profileInputRadioConent {
+    display: flex;
+    gap: 0.3vw;
+    cursor: pointer;
+}
+/* radio 버튼이 선택되었을 때의 스타일 */
+.profileInputRadioConent > input[type='radio']:checked + .profileInputRadioConent::before {
+    background-color: #a16951; /* 원하는 색상으로 변경 */
+    border-color: #a16951; /* 선택된 버튼의 테두리 색상도 변경할 수 있습니다. */
+}
 .iconContainerFamily {
     position: absolute;
     top: 65%;
-    left: 10px; /* 필요에 따라 조절 */
+    left: 1vw;
     transform: translateY(-50%);
 }
 
@@ -141,4 +172,27 @@
 
 #fileButton {
     display: none;
+}
+/* .profileInputImgContainer {
+    display: flex;
+    justify-content: center;
+    gap: 2vw;
+    width: 15vw;
+} */
+.profileInputImgContainer1 {
+    display: flex;
+    justify-content: center;
+    gap: 2vw;
+    width: 15vw;
+}
+.profileInputContainerImg {
+    width: 5vw;
+    border: 1px solid #4d4637;
+    padding: 1vh;
+    cursor: pointer;
+}
+.selectedImage {
+    width: 5vw;
+    border: 3px solid #f57d73;
+    padding: 1vh;
 }
